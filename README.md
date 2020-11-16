@@ -1,14 +1,14 @@
 # Modify an existing Ubuntu package
 
 This document will guide you through the steps required to modify an existing
-Ubunut package and upload it to your Personal Package Archive (PPA). The steps
-are roughly:
+Ubuntu package and upload it to your Personal Package Archive (PPA). The steps
+are:
 
 1. Set up your system and your Launchpad account
 
 2. Retrieve the source code of an existing Ubuntu package
 
-3. Add a "testing.sh" script to the package and install it to `/usr/bin/`.
+3. Add a "testing.sh" script to the package and install it to `/usr/bin/`
 
 4. Add a "post-install" script
 
@@ -39,8 +39,8 @@ right release name here.
 
 ### Generate your GPG key
 
-You need a GPG key for signing your packages. Running the command
-and follow the instruction to generate one:
+You need a GPG key to sign your packages. Running the command and follow the
+instruction to generate one:
 
 ```bash
 $ gpg --gen-key
@@ -79,9 +79,9 @@ uid           [ultimate] John Liu <johnliu55tw@gmail.com>
 sub   rsa3072 2020-11-14 [E] [expires: 2022-11-14]
 ```
 
-The hexadecimal digits in the second line is *Key fingerprint* (
+The hexadecimal digits in the second line are *Key fingerprint* (
 `2734 D509 0EEC 923C 2FAB  2037 3EAF B456 7F85 1F68`), and the last
-eight digits is *key ID* (`7F851F68`). Run the following command to submit your
+eight digits are *key ID* (`7F851F68`). Run the following command to submit your
 key to Ubuntu keyserver:
 
 ```bash
@@ -127,9 +127,6 @@ After you imported your key, you can create a PPA now. Head to
 [https://launchpad.net/~](https://launchpad.net/~) and click
 "Create a new PPA". Enters URL and Display Name, then click "Activate".
 
-> **Note:** If you deleted a PPA, you will have to wait up to an hour before
-> you can recreate a PPA with the same name.
-
 ## Retrieve the source code of a package
 
 First, you need to know the name of the package you want to modify. You could
@@ -140,7 +137,7 @@ based on GNU hello, as an example.
 The ubuntu-dev-tools has a tool called `pull-lp-source` that we could
 use to download the source code of the package:
 
-> **Note:** The command will pull multiple files and store into current working
+> **Note:** The command will download multiple files into current working
 > directory. I would recommend creating a new directory and `cd` into it
 > before you run the command.
 
@@ -198,7 +195,7 @@ like):
 $ quilt refresh
 ```
 
-You can also add description to the patch using `quilt`:
+You can also add a description to the patch using `quilt`:
 ```bash
 $ quilt header --dep3 -e
 ```
@@ -231,9 +228,9 @@ $ echo 'testing.sh usr/bin' > debian/install
 
 It's convenient to run custom scripts at different stages during the
 installation process, and we can also create special files under `debian/`
-folder for the purpose. To add a script run **after the package got
-installed**, create a file named `postinst` under `debian/` and make sure it's
-executable. I will add a simple script that prints my name:
+folder for the purpose. To run a script **after the package is installed**, create
+a file named `postinst` under `debian/` and make sure it's executable. I will
+add a simple script that prints my name:
 
 ```
 #!/bin/sh
@@ -268,7 +265,7 @@ hello (2.10-2ubuntu2ppa2) focal; urgency=medium
  -- John Liu <johnliu55tw@gmail.com>  Sat, 14 Nov 2020 12:57:35 +0800
 ```
 
-**Three import things to note** while you're editing the change log:
+**Three important things to note** while you're editing the change log:
 
 1. **Version number (`2.10-2ubuntu2ppa2`)**: If you're creating an alternative version of a package
    already available in Ubuntu's repositories, you should ensure that:
@@ -280,7 +277,8 @@ hello (2.10-2ubuntu2ppa2) focal; urgency=medium
    for more detail about versioning your package.
 
 2. **Upload Ubuntu release (`focal`)**: The default value is `UNRELEASED`,
-   which would cause build to fail. I'm using 20.04 so I changed it to `focal`.
+   which would cause the build to fail. I'm using 20.04 so I changed it to
+   `focal`.
 
 3. **Name and email address (`John Liu <johnliu55tw@gmail.com>`)**: Make sure
    the email address is identical to the one you used to create the GPG key, or
@@ -303,8 +301,9 @@ In my case the name of the `dsc` file is `hello_2.10-2ubuntu2ppa2.dsc`:
 $ pbuilder-dist focal build ../hello_2.10-2ubuntu2ppa2.dsc
 ```
 
-Then a `deb` file will be generated under `~/pbuilder/<Ubuntu release>_result/`
-folder. I'm running 20.04 so it's `focal_result`:
+The `pbuilder-dist` command will generate a `deb` under
+`~/pbuilder/<Ubuntu release>_result/` folder. I'm running 20.04 so it's
+`focal_result`:
 ```bash
 $ ls ~/pbuilder/focal_result/*.deb
 /home/johnliu/pbuilder/focal_result/hello_2.10-2ubuntu2ppa2_amd64.deb
@@ -324,7 +323,7 @@ Selecting previously unselected package hello.
 Preparing to unpack .../hello_2.10-2ubuntu2ppa2_amd64.deb ...
 Unpacking hello (2.10-2ubuntu2ppa2) ...
 Setting up hello (2.10-2ubuntu2ppa2) ...
-this is a test from John Liu  # <- This is what postinst does
+this is a test from John Liu  # <- This is what postinst did
 Processing triggers for install-info (6.7.0.dfsg.2-5) ...
 Processing triggers for man-db (2.9.1-1) ...
 ```
@@ -355,7 +354,7 @@ You will receive an email telling you whether the package is successfully
 uploaded and accepted. Be sure to check for the email. If your upload failed,
 check
 [Package upload errors](https://help.launchpad.net/Packaging/UploadErrors)
-chapter of launchpad help for possible errors.
+chapter of launchpad help for common issues.
 
 Notice that after it's uploaded, it takes some time for your source package to
 be built and published on Launchpad. Go to your PPA page, check the *Status*
@@ -382,9 +381,9 @@ Then you can install your package by `apt`. In my case I want to install
 $ sudo apt install hello
 ```
 
-Notice that if the version of your package does not supersedes the offical
-Ubuntu version (i.e. your package is not newer), `apt` will install the
-offical package, not yours. See
+Notice that if your package's version does not supersede the official Ubuntu
+version (i.e., your package is not newer), `apt` will install the official
+package, not yours. See
 https://help.launchpad.net/Packaging/PPA/BuildingASourcePackage#Versioning
 for more about versioning.
 
@@ -420,30 +419,32 @@ debuild: fatal error at line 1182:
 dpkg-buildpackage -us -uc -ui -S -d failed
 ```
 
-### Causes
+### Causes & Solutions
 The `dh` command is provided by package `debhelper`, but is not listed in 
 required package in the
 [Getting Set Up](https://packaging.ubuntu.com/html/getting-set-up.html) page.
-I need to install this package. I choose to install Ubunut in minimal setup,
+I installed that package then it works. I installed Ubuntu in minimal setup,
 not quite sure if it's related.
 
 ## Failed to run `dput` command
+
+I got some error when I try to run `dput` for the first time:
 ```
 Checking signature on .changes
 gpg: /home/johnliu/repackage-htop/htop_2.2.0-2ubuntu1_source.changes: error 58: gpgme_op_verify
 gpgme_op_verify: GPGME: No data
 ```
 
-### Causes
+### Causes & Solutions
 
-The file `*.changes` is not signed. I have to correct file `debian/changelog`:
+The file `*.changes` is not signed. I have to correct `debian/changelog`:
 
 - `UNRELEASED` -> `focal`
 - User and email
 
 ## Using `quilt` to create a new file
 
-Following article
+Following the article
 [Fixing a bug in Ubuntu](https://packaging.ubuntu.com/html/fixing-a-bug.html),
 when I try to create a new patch using command `edit-patch 99-new-patch`, some
 error occurred:
@@ -453,10 +454,10 @@ Normalizing patch name to 99-new-patch.patch
 No series file found
 ```
 
-### Causes
-The `hello` package does not have any patches so `debian/patches/series` does
-not exist. Need to use command `quilt new` to initialize and create a new
-patch.
+### Causes & Solutions
+The `hello` package does not have any patches so there's no
+`debian/patches/series`. Need to use command `quilt new` to initialize and
+create a new patch.
 
 ## Failed to add my PPA to my system
 
@@ -503,7 +504,7 @@ Err:5 http://ppa.launchpad.net/johnliu55tw/ppa/ubuntu focal InRelease
   403  Forbidden [IP: 91.189.95.83 80]
 ```
 
-### Causes
+### Causes & Solutions
 
 I googled and found this issue is caused by
 [the PPA has no package](https://askubuntu.com/questions/1212715/getting-a-403-error-with-a-ppa).
@@ -517,6 +518,8 @@ without any error.
 
 ## Question: The permission of "testing.sh" after installed to /usr/bin
 
-The permission of the file is 644, but after it's installed to `/usr/bin`,
-it becomes 755. Maybe there are some rules that automatically changed the
-permission because I want it in `/usr/bin`?
+The file's permission is 644 in the source, but after it's installed to
+`/usr/bin`, it becomes 755. I've tested changing it to install the file to
+`/etc` and the permission became 644, not 755. Maybe some rules automatically
+changed the permission because I want it in `/usr/bin`? I wasn't able to find
+documents so far.
