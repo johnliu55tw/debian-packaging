@@ -12,9 +12,9 @@ are:
 
 4. Add a "post-install" script
 
-5. Re-package it as a `deb`
+5. Re-package it as a `deb` and test it
 
-6. Upload and host it using your PPA on Launchpad so everyone can install it
+6. Host the package using your PPA on Launchpad to distribute it
 
 I'm running Ubuntu 20.04 (focal) in a VM.
 
@@ -55,8 +55,8 @@ uid                      John Liu <johnliu55tw@gmail.com>
 sub   rsa3072 2020-11-14 [E] [expires: 2022-11-14
 ```
 
-> **Note:** You can also run `gpg --full-generate-key` to fine-tune the key
-> (encryption algorithm, expiration of the key, ...).
+- **Note:** You can also run `gpg --full-generate-key` to fine-tune the key
+  (encryption algorithm, expiration of the key, ...).
 
 ### Create Launchpad account and import your GPG key
 
@@ -137,9 +137,9 @@ based on GNU hello, as an example.
 The ubuntu-dev-tools has a tool called `pull-lp-source` that we could
 use to download the source code of the package:
 
-> **Note:** The command will download multiple files into current working
-> directory. I would recommend creating a new directory and `cd` into it
-> before you run the command.
+- **Note:** The command will download multiple files into current working
+  directory. I would recommend creating a new directory and `cd` into it
+  before you run the command.
 
 ```bash
 $ pull-lp-source hello focal
@@ -221,7 +221,7 @@ testing.sh usr/bin
 
 One-liner:
 ```bash
-$ echo 'testing.sh usr/bin' > debian/install
+$ echo 'testing.sh usr/bin' >> debian/install
 ```
 
 ### Add a "post-install" script
@@ -242,7 +242,7 @@ See
 [Package maintainer scripts and installation procedure](https://www.debian.org/doc/debian-policy/ch-maintainerscripts.html)
 for more information.
 
-### Documenting the fix
+### Document the fix
 
 Every Debian and Ubuntu package source includes a file `debian/changelog` which
 records version changes. Other than manually modifying the file, you could use `dch`
@@ -328,6 +328,13 @@ Processing triggers for install-info (6.7.0.dfsg.2-5) ...
 Processing triggers for man-db (2.9.1-1) ...
 ```
 
+And the `testing.sh` we have installed into `/usr/bin/`:
+```
+$ dpkg -S testing.sh; testing.sh
+hello: /usr/bin/testing.sh
+this is a test from John Liu
+```
+
 ## Re-package it as deb and upload to your PPA
 
 After you finished testing, run `debuild` again to generate the source package
@@ -347,8 +354,8 @@ In my case it's:
 $ dput ppa:johnliu55tw/ppa ../hello_2.10-2ubuntu2ppa2_source.changes
 ```
 
-> **Note:** Launchpad builds the pacakges onsite, and does not accept deb
-> files!
+- **Note:** Launchpad builds the pacakges onsite, and does not accept deb
+  files!
 
 You will receive an email telling you whether the package is successfully
 uploaded and accepted. Be sure to check for the email. If your upload failed,
@@ -357,14 +364,14 @@ check
 chapter of launchpad help for common issues.
 
 Notice that after it's uploaded, it takes some time for your source package to
-be built and published on Launchpad. Go to your PPA page, check the *Status*
+be **built and published** on Launchpad. Go to your PPA page, check the *Status*
 and *Build Status* of your package and make sure they are all finished.
 
 ![PPA Package finshed](./doc-images/ppa-package-done.png)
 
 ## Install the package from your PPA
 
-> **Note:** Make sure your packages are built and published!
+- **Note:** Make sure your packages are built and published!
 
 In order to install the package from your PPA, you have to add it to your
 system:
@@ -397,7 +404,9 @@ for more about versioning.
 
 - [How to use quilt to manage patches in Debian packages - Raphaël Hertzog](https://raphaelhertzog.com/2012/08/08/how-to-use-quilt-to-manage-patches-in-debian-packages/)
 
-# Issues I've encountered
+# Questions and issues during the process
+
+Here are some issues and questions I have during the process.
 
 ## Failed to run `debuild` command
 
@@ -456,7 +465,7 @@ No series file found
 
 ### Causes & Solutions
 The `hello` package does not have any patches so there's no
-`debian/patches/series`. Need to use command `quilt new` to initialize and
+`debian/patches/series`. Need to use `quilt new` to initialize and
 create a new patch.
 
 ## Failed to add my PPA to my system
@@ -506,10 +515,10 @@ Err:5 http://ppa.launchpad.net/johnliu55tw/ppa/ubuntu focal InRelease
 
 ### Causes & Solutions
 
-I googled and found this issue is caused by
+I googled and found this issue might be caused by
 [the PPA has no package](https://askubuntu.com/questions/1212715/getting-a-403-error-with-a-ppa).
-I then realized that receiving the "Accepted" email doesn't mean your package
-is ready to ship via PPA. You have to wait until it's built and published.
+I then realized receiving the "Accepted" email doesn't mean your package is
+ready to ship via PPA. You have to wait until it's built and published.
 
 ![PPA Package status](./doc-images/ppa-package-status.png)
 
